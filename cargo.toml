@@ -1,0 +1,2 @@
+[workspace]
+members = ["rustiles_cli", "rustiles_style"]
