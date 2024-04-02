@@ -2,10 +2,9 @@ use mvt_reader::Reader;
 
 use log::trace;
 
-mod mbtiles;
-use crate::mbtiles::MbTiles;
-mod renderer;
-use crate::renderer::render_tile;
+use rustiles;
+use rustiles::mbtiles::MbTiles;
+use rustiles::renderer::render_tile;
 
 fn main() {
     env_logger::init();
