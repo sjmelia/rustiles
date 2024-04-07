@@ -107,7 +107,7 @@ fn render_features(pixmap: &mut Pixmap, paint: &Paint, stroke: &Stroke, features
         if let Some(properties) = properties_option {
             let class_option = properties.get("class");
             if let Some(class) = class_option {
-                println!("Class was {}", class);
+                //println!("Class was {}", class);
                 if class == "tertiary" || class == "track" || class == "minor" || class == "secondary" || class == "primary" || class == "trunk" || class == "motorway" {
                     return true;
                 }
