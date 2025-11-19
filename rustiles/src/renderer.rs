@@ -11,11 +11,11 @@ pub fn render_tile(reader: Reader) -> Result<Pixmap> {
     paint.anti_alias = true;
 
     let mut stroke = Stroke::default();
-    stroke.width = 6.0;
+    stroke.width = 10.0;
     stroke.line_cap = LineCap::Round;
     stroke.dash = StrokeDash::new(vec![20.0, 40.0], 0.0);
 
-    let pixmap_option = Pixmap::new(4096, 4096);
+    let pixmap_option = Pixmap::new(4096, 4096); //4096, 4096);
     let Some(mut pixmap) = pixmap_option else {
         return Err(anyhow!("Could not create pixmap"));
     };
@@ -87,6 +87,7 @@ pub fn render_style(style: CompiledStyle, features: Vec<Feature>) {
 
 fn render_layers(pixmap: &mut Pixmap, paint: Paint, stroke: Stroke, reader: Reader, layer_names: Vec<String>) -> Result<()> {
     for (index, _name) in layer_names.iter().enumerate() {
+        println!("Rendering layer {}", _name);
         let Ok(features) = reader.get_features(index) else {
             return Err(anyhow!("Could not get features"));
         };
@@ -118,11 +119,14 @@ fn render_features(pixmap: &mut Pixmap, paint: &Paint, stroke: &Stroke, features
     }
 
     for feature in features {
+        
         let geometry = feature.get_geometry();
         if matches_pattern(&feature) {
-            render_geometry(pixmap, &red, stroke, geometry)?;
-        } else {
+            println!("Matches: Rendering feature...");
             render_geometry(pixmap, paint, stroke, geometry)?;
+        } else {
+            //println!("Does not match: Rendering feature...");
+            render_geometry(pixmap, &red, stroke, geometry)?;
         }
     }
 
@@ -130,9 +134,10 @@ fn render_features(pixmap: &mut Pixmap, paint: &Paint, stroke: &Stroke, features
 }
 
 fn render_point(pixmap: &mut Pixmap, paint: &Paint, point: &Point<f32>) -> Result<()> {
+    println!("Render point {} {}", point.x(), point.y());
     let x = point.x() as f32;
     let y = point.y() as f32;
-    let Some(rect) = tiny_skia::Rect::from_xywh(x, y, 3.0, 3.0) else {
+    let Some(rect) = tiny_skia::Rect::from_xywh(x, y, 100.0, 100.0) else {
         return Err(anyhow!("Could not create rect from point"));
     };
 
@@ -141,6 +146,7 @@ fn render_point(pixmap: &mut Pixmap, paint: &Paint, point: &Point<f32>) -> Resul
 }
 
 fn render_line(pixmap: &mut Pixmap, paint: &Paint, stroke: &Stroke, line: &Line<f32>) -> Result<()> {
+    println!("Render line");
     let start_point = line.start_point();
     let start_x = start_point.x() as f32;
     let start_y = start_point.y() as f32;
@@ -164,11 +170,12 @@ fn render_line(pixmap: &mut Pixmap, paint: &Paint, stroke: &Stroke, line: &Line<
 }
 
 fn render_line_string(pixmap: &mut Pixmap, paint: &Paint, stroke: &Stroke, line_string: &LineString<f32>) -> Result<()> {
+    println!("Render line string");
     let path_option = {
         let mut pb = PathBuilder::new();
         let points = line_string.points();
         for (index, point) in points.enumerate() {
-            trace!("\tPoint at {}, {}", point.x(), point.y());
+            println!("\tPoint at {}, {}", point.x(), point.y());
             let x = point.x();
             let y = point.y();
             if index == 0 {
