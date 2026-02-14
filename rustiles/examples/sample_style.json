@@ -1,0 +1,41 @@
+{
+  "version": 8,
+  "name": "CI Sample Style",
+  "sources": {
+    "sample": {
+      "type": "vector"
+    }
+  },
+  "layers": [
+    {
+      "id": "background",
+      "type": "background",
+      "paint": {
+        "background-color": "#e8eef5"
+      }
+    },
+    {
+      "id": "all-polygons-fill",
+      "type": "fill",
+      "paint": {
+        "fill-color": "#c6dbef"
+      }
+    },
+    {
+      "id": "all-lines-stroke",
+      "type": "line",
+      "paint": {
+        "line-color": "#08519c",
+        "line-width": 2
+      }
+    },
+    {
+      "id": "all-points-circle",
+      "type": "circle",
+      "paint": {
+        "circle-color": "#cb181d",
+        "circle-radius": 4
+      }
+    }
+  ]
+}

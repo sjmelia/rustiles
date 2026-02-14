@@ -26,15 +26,12 @@ impl MbTiles {
             }
         }
 
-        let result = MbTiles {
-            connection: connection,
-        };
-
-        Ok(result)
+        Ok(MbTiles { connection })
     }
 
-    pub fn get_tile(self, zoom_level: i64, tile_column: i64, tile_row: i64) -> Result<Vec<u8>> {
-        let query = "SELECT * FROM tiles WHERE zoom_level = ? AND tile_column = ? AND tile_row = ?";
+    pub fn get_tile(&self, zoom_level: i64, tile_column: i64, tile_row: i64) -> Result<Vec<u8>> {
+        let query =
+            "SELECT tile_data FROM tiles WHERE zoom_level = ? AND tile_column = ? AND tile_row = ?";
         let mut statement = self.connection.prepare(query)?;
         statement.bind((1, zoom_level))?;
         statement.bind((2, tile_column))?;
@@ -42,12 +39,27 @@ impl MbTiles {
 
         while let Ok(Row) = statement.next() {
             let tile_data = statement.read::<Vec<u8>, _>("tile_data")?;
-            let mut decoder = GzDecoder::new(tile_data.as_slice());
-            let mut buffer = Vec::new();
-            decoder.read_to_end(&mut buffer).unwrap();
-            return Ok(buffer);
+            if tile_data.starts_with(&[0x1f, 0x8b]) {
+                let mut decoder = GzDecoder::new(tile_data.as_slice());
+                let mut buffer = Vec::new();
+                decoder.read_to_end(&mut buffer)?;
+                return Ok(buffer);
+            }
+
+            return Ok(tile_data);
         }
 
-        return Err(anyhow!("No tile found"));
+        Err(anyhow!(
+            "No tile found for z/x/y = {}/{}/{}",
+            zoom_level,
+            tile_column,
+            tile_row
+        ))
+    }
+
+    pub fn get_tile_xyz(&self, zoom_level: i64, tile_column: i64, y_xyz: i64) -> Result<Vec<u8>> {
+        let max_row = (1_i64 << zoom_level) - 1;
+        let y_tms = max_row - y_xyz;
+        self.get_tile(zoom_level, tile_column, y_tms)
     }
 }
