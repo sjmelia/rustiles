@@ -1,27 +1,40 @@
 {
   "version": 8,
-  "name": "Fixture Style",
+  "name": "CI Sample Style",
   "sources": {
-    "demo": {
+    "sample": {
       "type": "vector"
     }
   },
   "layers": [
     {
-      "id": "bg",
+      "id": "background",
       "type": "background",
       "paint": {
-        "background-color": "#ffffff"
+        "background-color": "#e8eef5"
       }
     },
     {
-      "id": "line",
-      "type": "line",
-      "source": "demo",
-      "source-layer": "demo",
+      "id": "all-polygons-fill",
+      "type": "fill",
       "paint": {
-        "line-color": "#ff0000",
-        "line-width": 24
+        "fill-color": "#c6dbef"
+      }
+    },
+    {
+      "id": "all-lines-stroke",
+      "type": "line",
+      "paint": {
+        "line-color": "#08519c",
+        "line-width": 2
+      }
+    },
+    {
+      "id": "all-points-circle",
+      "type": "circle",
+      "paint": {
+        "circle-color": "#cb181d",
+        "circle-radius": 4
       }
     }
   ]
