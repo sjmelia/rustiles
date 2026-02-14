@@ -1,0 +1,28 @@
+{
+  "version": 8,
+  "name": "Fixture Style",
+  "sources": {
+    "demo": {
+      "type": "vector"
+    }
+  },
+  "layers": [
+    {
+      "id": "bg",
+      "type": "background",
+      "paint": {
+        "background-color": "#ffffff"
+      }
+    },
+    {
+      "id": "line",
+      "type": "line",
+      "source": "demo",
+      "source-layer": "demo",
+      "paint": {
+        "line-color": "#ff0000",
+        "line-width": 24
+      }
+    }
+  ]
+}

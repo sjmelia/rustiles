@@ -1,0 +1,51 @@
+name: Render sample tile
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Prepare workspace
+        run: |
+          mkdir -p ci/input ci/output
+
+      - name: Download sample MVT tile
+        run: |
+          set -euo pipefail
+          URLS=(
+            "https://raw.githubusercontent.com/mapbox/vector-tile-js/master/test/fixtures/14-8801-5371.vector.pbf"
+            "https://raw.githubusercontent.com/mapbox/vector-tile-js/main/test/fixtures/14-8801-5371.vector.pbf"
+          )
+
+          for url in "${URLS[@]}"; do
+            if curl --fail --location --silent --show-error "$url" --output ci/input/sample_tile.mvt; then
+              echo "Downloaded tile from $url"
+              break
+            fi
+          done
+
+          test -s ci/input/sample_tile.mvt
+
+      - name: Render tile PNG
+        run: |
+          cargo run -p rustiles --bin render_sample_tile -- \
+            ci/input/sample_tile.mvt \
+            rustiles/examples/sample_style.json \
+            ci/output/rendered.png
+
+      - name: Upload rendered image artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rendered-sample-tile
+          path: ci/output/rendered.png
+          if-no-files-found: error
